@@ -12,9 +12,11 @@ import android.media.MediaPlayer.OnCompletionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import android.content.res.AssetFileDescriptor;
-
+import android.media.AudioManager;
 
 public class AndroidToast extends CordovaPlugin {
+public static final String ACTION_SET_AUDIO_MODE = "setAudioMode";
+
 	int length=0;
 	int compleeted=0;
 	int i = 0;
@@ -33,6 +35,14 @@ public class AndroidToast extends CordovaPlugin {
 		if("play".equals(action)){
 		  play(args.getString(0));
 		 return true; 
+		}
+		if (action.equals(ACTION_SET_AUDIO_MODE)) {
+			if (!setAudioMode(args.getString(0))) {
+				callbackContext.error("Invalid audio mode");
+				return false;
+			}
+			
+			return true;
 		}
 
 
@@ -299,5 +309,35 @@ public class AndroidToast extends CordovaPlugin {
     }
 	
  ////////////////////////////////////////////////////////////////////////////////
+
+	public boolean setAudioMode(String mode) {
+	    Context context = webView.getContext();
+	    AudioManager audioManager = 
+	    	(AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+	    
+	    if (mode.equals("earpiece")) {
+	    	audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+	    	audioManager.setSpeakerphoneOn(false);
+	        return true;
+	    } else if (mode.equals("speaker")) {        
+	    	audioManager.setMode(AudioManager.STREAM_MUSIC);
+	    	audioManager.setSpeakerphoneOn(true);
+	        return true;
+	    } else if (mode.equals("ringtone")) {        
+	    	audioManager.setMode(AudioManager.MODE_RINGTONE);
+	    	audioManager.setSpeakerphoneOn(false);
+	        return true; 
+	    } else if (mode.equals("normal")) {        
+	    	audioManager.setMode(AudioManager.MODE_NORMAL);
+	    	audioManager.setSpeakerphoneOn(false);
+	        return true;
+	    }
+	    
+	    return false;
+	}
+
+
+////////////////////////////////////////////////////////////////////////////////
 }  
+
 
