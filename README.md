@@ -1,7 +1,32 @@
 # IonicPlug
+This is simple cordova plugin for android which does following things: 
+1. Playing IVR sound.
+2. Set Audio mode.
+3. showing toast.
 
- `AndroidToast.play("12");`  : for TTS.
+##STEPS TO USE THIS PLUGIN
+
+1. Download the plugin
+
+  `git clone https://github.com/pookie13/IonicPlug`
+
+2. Add this plugin to your cordova project
+
+  `ionic plugin add "path of downloaded plugin"`
+3. Call functions
+
+###  for TTS
+
+`AndroidToast.play("12");`  
+
+### Set Audio Mode to EARPIECE
+
+`AndroidToast.setAudioMode(AndroidToast.EARPIECE);`
+
+### Set Audio Mode to SPEAKER
+
+ `AndroidToast.setAudioMode(AndroidToast.SPEAKER);`
  
-`AndroidToast.setAudioMode(AndroidToast.EARPIECE);` : for audio mode.
+### Showing Toast
 
-`AndroidToast.toast("anything");` : for making toast.
+`AndroidToast.toast("text to toast");`
