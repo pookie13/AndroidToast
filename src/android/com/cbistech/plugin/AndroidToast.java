@@ -14,8 +14,21 @@ import java.util.ArrayList;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 
+import android.Manifest;
+import org.apache.cordova.PermissionHelper;
+import android.content.pm.PackageManager;
+
+
+
 public class AndroidToast extends CordovaPlugin {
-public static final String ACTION_SET_AUDIO_MODE = "setAudioMode";
+	public static final String ACTION_SET_AUDIO_MODE = "setAudioMode";
+	private String mode;
+	private static final String MODIFY_AUDIO = Manifest.permission.MODIFY_AUDIO_SETTINGS;
+	///////////////check permissions////////////////
+	
+	private static final String READ_SMS = Manifest.permission.READ_SMS;
+	
+	
 
 	int length=0;
 	int compleeted=0;
@@ -27,33 +40,42 @@ public static final String ACTION_SET_AUDIO_MODE = "setAudioMode";
 		JSONArray args, 
 		CallbackContext callbackContext
 	  ) throws JSONException {
-		if("toast".equals(action)){
-		  toast(args.getString(0));
-		 return true; 
-		}
-
-		if("play".equals(action)){
-		  play(args.getString(0));
-		 return true; 
-		}
-		if (action.equals(ACTION_SET_AUDIO_MODE)) {
-			if (!setAudioMode(args.getString(0))) {
-				callbackContext.error("Invalid audio mode");
-				return false;
+			if("toast".equals(action)){
+			  toast(args.getString(0));
+			 return true; 
 			}
-			
-			return true;
-		}
+
+			if("play".equals(action)){
+			  play(args.getString(0));
+			 return true; 
+			}
+			if("checkForSMSPermission".equals(action)){
+			  checkForSMSPermission();
+			 return true; 
+			}
+			if("checkForRecordPermission".equals(action)){
+			  checkForRecordPermission();
+			 return true; 
+			}
+			if (action.equals(ACTION_SET_AUDIO_MODE)) {
+				mode=args.getString(0);
+				if (!setAudioMode(args.getString(0))) {
+					callbackContext.error("Invalid audio mode");
+					return false;
+				}
+
+				return true;
+			}
 
 
 		return false;
 	  }
 
-  
+  //////////////////////////////////////////////////////////////////
    private void toast(String title) {
 	   Toast.makeText(webView.getContext(),title, Toast.LENGTH_LONG).show();
    }
-	
+	//////////////////////////////////////////////////
 	private void play(String title) {
 		String word = title.trim();
 		length = word.length();
@@ -311,33 +333,85 @@ public static final String ACTION_SET_AUDIO_MODE = "setAudioMode";
  ////////////////////////////////////////////////////////////////////////////////
 
 	public boolean setAudioMode(String mode) {
-	    Context context = webView.getContext();
-	    AudioManager audioManager = 
-	    	(AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-	    
-	    if (mode.equals("earpiece")) {
-	    	audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-	    	audioManager.setSpeakerphoneOn(false);
-	        return true;
-	    } else if (mode.equals("speaker")) {        
-	    	audioManager.setMode(AudioManager.STREAM_MUSIC);
-	    	audioManager.setSpeakerphoneOn(true);
-	        return true;
-	    } else if (mode.equals("ringtone")) {        
-	    	audioManager.setMode(AudioManager.MODE_RINGTONE);
-	    	audioManager.setSpeakerphoneOn(false);
-	        return true; 
-	    } else if (mode.equals("normal")) {        
-	    	audioManager.setMode(AudioManager.MODE_NORMAL);
-	    	audioManager.setSpeakerphoneOn(false);
-	        return true;
-	    }
-	    
+		 		
+			Context context = webView.getContext();
+			AudioManager audioManager = 
+				(AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+			if (mode.equals("earpiece")) {
+				audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+				audioManager.setSpeakerphoneOn(false);
+				return true;
+			} else if (mode.equals("speaker")) {        
+				audioManager.setMode(AudioManager.STREAM_MUSIC);
+				audioManager.setSpeakerphoneOn(true);
+				return true;
+			} else if (mode.equals("ringtone")) {        
+				audioManager.setMode(AudioManager.MODE_RINGTONE);
+				audioManager.setSpeakerphoneOn(false);
+				return true; 
+			} else if (mode.equals("normal")) {        
+				audioManager.setMode(AudioManager.MODE_NORMAL);
+				audioManager.setSpeakerphoneOn(false);
+				return true;
+			}
+			
 	    return false;
 	}
 
 
+///////////////////////////////////check for permission/////////////////////////////////////////////
+	
+	public boolean checkForSMSPermission() {
+		boolean permissionCheck = PermissionHelper.hasPermission(this,Manifest.permission.READ_SMS);
+        if (!permissionCheck) {
+           PermissionHelper.requestPermission(this, 105, Manifest.permission.READ_SMS);
+            return false;
+        } 
+        return true;
+    }
+		
+	public boolean checkForRecordPermission() {
+		boolean permissionCheck = PermissionHelper.hasPermission(this,Manifest.permission.RECORD_AUDIO);
+        if (!permissionCheck) {
+           PermissionHelper.requestPermission(this, 104, Manifest.permission.RECORD_AUDIO);
+            return false;
+        } 
+        return true;
+    }
+		
+	 public void onRequestPermissionResult(int requestCode, String[] permissions,
+                                             int[] grantResults) throws JSONException {
+		 
+		 //handle denied callback
+        for(int r:grantResults)
+        {
+            if(r == PackageManager.PERMISSION_DENIED)
+            {
+                Toast.makeText(webView.getContext(),"you denied permission,so app will not work perfectly", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+		 
+		 //user permit permission
+		 
+        switch(requestCode){
+            case 105:
+           		 Toast.makeText(webView.getContext(),"request permit", Toast.LENGTH_SHORT).show();
+                break; 
+			
+			case 102:
+           		setAudioMode(mode);
+                break;
+			case 104:
+           		 Toast.makeText(webView.getContext(),"request permit", Toast.LENGTH_SHORT).show();
+                break;
+		
+          }
+    }
+	
 ////////////////////////////////////////////////////////////////////////////////
+	
 }  
 
 
