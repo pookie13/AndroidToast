@@ -6,14 +6,10 @@ This is simple cordova plugin for android which does following things:
 
 ##STEPS TO USE THIS PLUGIN
 
-1. Download the plugin
+1. Add this plugin to your cordova project
 
-  `git clone https://github.com/pookie13/IonicPlug`
-
-2. Add this plugin to your cordova project
-
-  `ionic plugin add "path of downloaded plugin"`
-3. Call functions
+  `ionic plugin add https://github.com/pookie13/IonicPlug`
+2. Call functions
 
 ###  for TTS
 
