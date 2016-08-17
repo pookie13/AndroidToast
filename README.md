@@ -26,3 +26,12 @@ This is simple cordova plugin for android which does following things:
 ### Showing Toast
 
 `AndroidToast.toast("text to toast");`
+
+### Check for AUDIO_RECORD permission
+
+ `AndroidToast.checkForRecordPermission();`
+ 
+### Check for READ_SMS permission
+
+ `AndroidToast.checkForSMSPermission();`
+
