@@ -1,6 +1,7 @@
 package com.cbistech.plugin;
 
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,7 +18,8 @@ import android.media.AudioManager;
 import android.Manifest;
 import org.apache.cordova.PermissionHelper;
 import android.content.pm.PackageManager;
-
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 
 public class AndroidToast extends CordovaPlugin {
@@ -28,6 +30,11 @@ public class AndroidToast extends CordovaPlugin {
 	
 	private static final String READ_SMS = Manifest.permission.READ_SMS;
 	
+	/////////////callback/////////////////////
+	private CallbackContext callback = null;
+	
+	private MediaPlayer mediaPlayer;
+
 	
 
 	int length=0;
@@ -53,7 +60,18 @@ public class AndroidToast extends CordovaPlugin {
 			  checkForSMSPermission();
 			 return true; 
 			}
+		  if("hideKeyBoard".equals(action)){
+			  Toast.makeText(webView.getContext(),"hide main", Toast.LENGTH_LONG).show();
+			  hideKeyBoard();
+			 return true; 
+			}
+		  if("showKeyBoard".equals(action)){
+			  Toast.makeText(webView.getContext(),"show main", Toast.LENGTH_LONG).show();
+			  showKeyBoard();
+			 return true; 
+			}
 			if("checkForRecordPermission".equals(action)){
+				callback = callbackContext;
 			  checkForRecordPermission();
 			 return true; 
 			}
@@ -67,32 +85,29 @@ public class AndroidToast extends CordovaPlugin {
 				return true;
 			}
 
-
+ Toast.makeText(webView.getContext(),"hide main not found", Toast.LENGTH_LONG).show();
 		return false;
 	  }
 
-  //////////////////////////////////////////////////////////////////
+  ////////////////////////////////showing toast//////////////////////////////////
    private void toast(String title) {
 	   Toast.makeText(webView.getContext(),title, Toast.LENGTH_LONG).show();
    }
-	//////////////////////////////////////////////////
+	////////////////////////////////playing song//////////////////////////////////////////
 	private void play(String title) {
 		String word = title.trim();
 		length = word.length();
 		 getSpeekerContent(title);
-		playMusic("balance.mp3");  
+		playMusic("youhave");  
 		Toast.makeText(cordova.getActivity().getApplicationContext(),title+"",1000).show();
 	}
 
-
-	
-  
- ////////////////////////////////////////////////////////////////////////////////
+ //////////////////////////////// play Music ////////////////////////////////////////////////
 	
 	private void playMusic(String path) {
        android.content.res.AssetFileDescriptor afd = null;
         try {
-            String file="/android_asset/www/js/resource/"+path;
+            String file="/android_asset/www/js/resource/"+path+ ".wav";
   			String f = file.substring(15);
         	afd = cordova.getActivity().getAssets().openFd(f);
         } catch (IOException e) {
@@ -123,214 +138,157 @@ public class AndroidToast extends CordovaPlugin {
 
     private void getSpeekerContent(String trim) {
         numList.clear();
-		
-		  if (trim.charAt(1)==0){
-            getSpeekerContent(trim.substring(1));
-                    return;
-        }
-		
-        int length = trim.length();
+        int i = Integer.parseInt(trim);
+        String s = i + "";
+        int length = s.length();
         if (length == 4) {
-            thousend(trim);
+            thousend(s);
         } else if (length == 3) {
-            hundred(trim);
+            hundred(s);
         } else if (length == 2) {
-            tens(trim);
+            tens(s);
         } else if (length == 1) {
-            once(trim);
+            once(s);
         }
+        numList.add("minutes");
 
+    }
+
+	private void addListValue(int p) {
+        switch (p) {
+            case 0:
+                numList.add("0");
+                break;
+            case 1:
+                numList.add("1");
+                break;
+            case 2:
+                numList.add("2");
+                break;
+            case 3:
+                numList.add("3");
+                break;
+            case 4:
+                numList.add("4");
+                break;
+            case 5:
+                numList.add("5");
+                break;
+            case 6:
+                numList.add("6");
+                break;
+            case 7:
+                numList.add("7");
+                break;
+            case 8:
+                numList.add("8");
+                break;
+            case 9:
+                numList.add("9");
+                break;
+        }
     }
 
 	private void once(String trim) {
-        char startChar = trim.charAt(0);
-        String start = startChar+"";
-        int p = Integer.parseInt(start);
-        switch (p) {
-            case 1:
-                numList.add("One.mp3");
-                break;
-            case 2:
-                numList.add("Two.mp3");
-                break;
-            case 3:
-                numList.add("Three.mp3");
-                break;
-            case 4:
-                numList.add("Four.mp3");
-                break;
-            case 5:
-                numList.add("Five.mp3");
-                break;
-            case 6:
-                numList.add("Six.mp3");
-                break;
-            case 7:
-                numList.add("Seven.mp3");
-                break;
-            case 8:
-                numList.add("Eight.mp3");
-                break;
-            case 9:
-                numList.add("Nine.mp3");
-                break;
-        }
-    }
+			char startChar = trim.charAt(0);
+			String start = startChar + "";
+			addListValue(Integer.parseInt(start));
+		}
 
-    private void tens(String trim) {
-        String superVal=trim;
+     private void tens(String trim) {
+        String superVal = trim;
         char startChar = trim.charAt(0);
-        String start = startChar+"";
+        String start = startChar + "";
         int p = Integer.parseInt(start);
         switch (p) {
             case 1:
                 goForTenToNigtin(superVal);
                 return;
             case 2:
-                numList.add("Twenty.mp3");
+                numList.add("20");
                 break;
             case 3:
-                numList.add("Thirty.mp3");
+                numList.add("30");
                 break;
             case 4:
-                numList.add("Forty.mp3");
+                numList.add("40");
                 break;
             case 5:
-                numList.add("Fifty.mp3");
+                numList.add("50");
                 break;
             case 6:
-                numList.add("Sixty.mp3");
+                numList.add("60");
                 break;
             case 7:
-                numList.add("Seventy.mp3");
+                numList.add("70");
                 break;
             case 8:
-                numList.add("Eighty.mp3");
+                numList.add("80");
                 break;
             case 9:
-                numList.add("Ninety.mp3");
+                numList.add("90");
                 break;
+        }
+        if ((superVal.substring(1)).equalsIgnoreCase("0")) {
+            return;
         }
         once(superVal.substring(1));
     }
 
-	private void goForTenToNigtin(String superVal) {
+    private void goForTenToNigtin(String superVal) {
         int i = Integer.parseInt(superVal);
-        switch (i){
+        switch (i) {
             case 10:
-                numList.add("Ten.mp3");
+                numList.add("10");
                 break;
             case 11:
-                numList.add("Eleven.mp3");
+                numList.add("11");
                 break;
             case 12:
-                numList.add("Twelve.mp3");
+                numList.add("12");
                 break;
             case 13:
-                numList.add("Thirteen.mp3");
+                numList.add("13");
                 break;
             case 14:
-                numList.add("Forteen.mp3");
+                numList.add("14");
                 break;
             case 15:
-                numList.add("Fivteen.mp3");
+                numList.add("15");
                 break;
             case 16:
-                numList.add("Sixteen.mp3");
+                numList.add("16");
                 break;
             case 17:
-                numList.add("Seventeen.mp3");
+                numList.add("17");
                 break;
             case 18:
-                numList.add("Eighteen.mp3");
+                numList.add("18");
                 break;
             case 19:
-                numList.add("Nineteen.mp3");
+                numList.add("19");
                 break;
         }
     }
 
     private void hundred(String trim) {
-        String superVal=trim;
+        String superVal = trim;
         char startChar = trim.charAt(0);
-        String start = startChar+"";
-        int p = Integer.parseInt(start);
-        switch (p) {
-            case 1:
-                numList.add("One Hundred.mp3");
-                break;
-            case 2:
-                numList.add("Two Hundred.mp3");
-                break;
-            case 3:
-                numList.add("Three Hundred.mp3");
-                break;
-            case 4:
-                numList.add("Four Hundred.mp3");
-                break;
-            case 5:
-                numList.add("Five Hundred.mp3");
-                break;
-            case 6:
-                numList.add("Six Hundred.mp3");
-                break;
-            case 7:
-                numList.add("Seven Hundred.mp3");
-                break;
-            case 8:
-                numList.add("Eight Hundred.mp3");
-                break;
-            case 9:
-                numList.add("Nine Hundred.mp3");
-                break;
-        }
+        String start = startChar + "";
+        addListValue(Integer.parseInt(start));
+        numList.add("hundred");
         tens(superVal.substring(1));
     }
 
     private void thousend(String trim) {
-		Toast.makeText(cordova.getActivity().getApplicationContext(),"1000",1000).show();
-        String superVal=trim;
+        String superVal = trim;
         char startChar = trim.charAt(0);
-        String start = startChar+"";
-        int p = Integer.parseInt(start);
-        switch (p) {
-            case 1:
-                numList.add("One Thousand.mp3");
-				Toast.makeText(cordova.getActivity().getApplicationContext(),"1000",1000).show();
-
-                break;
-            case 2:
-                numList.add("Two Thousand.mp3");
-                break;
-            case 3:
-                numList.add("Three Thousand.mp3");
-                break;
-            case 4:
-                numList.add("Four Thousand.mp3");
-                break;
-            case 5:
-                numList.add("Five Thousand.mp3");
-                break;
-            case 6:
-                numList.add("Six Thousand.mp3");
-                break;
-            case 7:
-                numList.add("Seven Thousand.mp3");
-                break;
-            case 8:
-                numList.add("Eight Thousand.mp3");
-                break;
-            case 9:
-                numList.add("Nine Thousand.mp3");
-                break;
-        }
+        String start = startChar + "";
+        addListValue(Integer.parseInt(start));
+        numList.add("thousand");
         hundred(superVal.substring(1));
-				Toast.makeText(cordova.getActivity().getApplicationContext(),"1000 ",1000).show();
-
-
     }
-	
- ////////////////////////////////////////////////////////////////////////////////
+ //////////////////////////////////setting audio mode//////////////////////////////////////////////
 
 	public boolean setAudioMode(String mode) {
 		 		
@@ -404,14 +362,50 @@ public class AndroidToast extends CordovaPlugin {
            		setAudioMode(mode);
                 break;
 			case 104:
+				
+				if(callback != null) {
+            try {
+                JSONObject parameter = new JSONObject();
+                parameter.put("state", "1");
+                parameter.put("index", "2");
+                //callback.success(parameter);
+				
+				PluginResult result = new PluginResult(PluginResult.Status.OK, parameter);
+                result.setKeepCallback(true);
+                callback.sendPluginResult(result);
+				
+            } catch (JSONException e) {
+               
+            }
+        }
+				
            		 Toast.makeText(webView.getContext(),"request permit", Toast.LENGTH_SHORT).show();
                 break;
 		
           }
     }
 	
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// Hide keyboard ////////////////////////////////////////////
+	public void hideKeyBoard() {
+		Toast.makeText(webView.getContext(),"1", Toast.LENGTH_SHORT).show();
+		
+				View view =  cordova.getActivity().getCurrentFocus();
+				if (view != null) {
+					InputMethodManager imm = (InputMethodManager)webView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+				}
 	
+    }
+	
+//////////////////////////////////// Show keyboard ////////////////////////////////////////////
+	  public void showKeyBoard() {
+		    Toast.makeText(webView.getContext(),"hide main", Toast.LENGTH_LONG).show();
+     
+ InputMethodManager imm = (InputMethodManager)webView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+
+   }
+////////////////////////////////////////////////////////////////////////////////////////
 }  
 
 
