@@ -61,12 +61,12 @@ public class AndroidToast extends CordovaPlugin {
 			 return true; 
 			}
 		  if("hideKeyBoard".equals(action)){
-			  Toast.makeText(webView.getContext(),"hide main", Toast.LENGTH_LONG).show();
+			  
 			  hideKeyBoard();
 			 return true; 
 			}
 		  if("showKeyBoard".equals(action)){
-			  Toast.makeText(webView.getContext(),"show main", Toast.LENGTH_LONG).show();
+			  
 			  showKeyBoard();
 			 return true; 
 			}
@@ -85,7 +85,7 @@ public class AndroidToast extends CordovaPlugin {
 				return true;
 			}
 
- Toast.makeText(webView.getContext(),"hide main not found", Toast.LENGTH_LONG).show();
+ 
 		return false;
 	  }
 
@@ -399,7 +399,7 @@ public class AndroidToast extends CordovaPlugin {
 	
 //////////////////////////////////// Show keyboard ////////////////////////////////////////////
 	  public void showKeyBoard() {
-		    Toast.makeText(webView.getContext(),"hide main", Toast.LENGTH_LONG).show();
+		    
      
  InputMethodManager imm = (InputMethodManager)webView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
