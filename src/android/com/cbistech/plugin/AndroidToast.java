@@ -99,7 +99,7 @@ public class AndroidToast extends CordovaPlugin {
 		length = word.length();
 		 getSpeekerContent(title);
 		playMusic("youhave");  
-		Toast.makeText(cordova.getActivity().getApplicationContext(),title+"",1000).show();
+	
 	}
 
  //////////////////////////////// play Music ////////////////////////////////////////////////
@@ -127,7 +127,7 @@ public class AndroidToast extends CordovaPlugin {
                 mp.stop();
                 if(i <  numList.size()) {
                     i++;
-							Toast.makeText(cordova.getActivity().getApplicationContext(),"onCompl",1000).show();
+		
                     playMusic(numList.get(i-1));
                 } else i = 0;
 
